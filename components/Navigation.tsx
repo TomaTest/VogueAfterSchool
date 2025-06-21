@@ -11,16 +11,19 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setIsMounted(true);
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       
       // Calculate scroll progress
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
       setScrollProgress(scrollPercent);
     };
 
@@ -47,13 +50,15 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Scroll Progress Indicator */}
-      <div className="scroll-indicator">
-        <div 
-          className="scroll-progress" 
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
+      {/* Scroll Progress Indicator - Only render on client */}
+      {isMounted && (
+        <div className="scroll-indicator">
+          <div 
+            className="scroll-progress" 
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+      )}
 
       <nav className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
